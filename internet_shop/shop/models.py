@@ -9,6 +9,9 @@ class TypeComment(models.Model):
     name = models.CharField(max_length=100)
     table_name = models.CharField(max_length=100)
 
+    def __str__(self) -> str:
+        return self.name
+
 class Characteristic(models.Model):
     name = models.CharField(max_length=100)
     name_show = models.CharField(max_length=150)
@@ -49,7 +52,7 @@ class ProductCategory(models.Model):
     url = models.SlugField(unique=True)
 
     parent = models.ForeignKey(
-        to = "self", on_delete=models.SET_NULL, null=True,
+        to = "self", on_delete=models.SET_NULL, null=True, blank=True
     )
     type_comment = models.ForeignKey(
         to=TypeComment, null=True, blank=True, on_delete=models.SET_NULL
@@ -61,6 +64,9 @@ class ProductCategory(models.Model):
     groups_characteristics = models.ManyToManyField(
         to=GroupCharacteristics, blank=True
     )
+
+    def __str__(self) -> str:
+        return self.name
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -78,16 +84,21 @@ class Product(models.Model):
     #     to=Seller, on_delete=models.CASCADE, related_name="product_seller"
     # )
 
+    def __str__(self) -> str:
+        return self.name
+
 class MaterialProduct(models.Model):
     product = models.ForeignKey(
         to=Product, on_delete=models.CASCADE,
     )
 
-    description = models.TextField()
     quantity = models.PositiveIntegerField()
     characteristic_value = models.ForeignKey(
         to=СharacteristicValue, on_delete=models.CASCADE, null=True, blank=True,
     )
+
+    def __str__(self) -> str:
+        return f"{self.product.name} ({self.quantity})"
     # stock = models.ForeignKey(
     #     to=
     # )
@@ -101,23 +112,48 @@ class ProductСharacteristic(models.Model):
     )
     value = models.CharField(max_length=300)
 
-class Comment(models.Model):
+    def __str__(self) -> str:
+        return f"{self.product}:{self.characteristic}"
+
+class Review(models.Model):
     user = models.ForeignKey(
         to=User, on_delete=models.CASCADE
     )
     product = models.ForeignKey(
-        to=Product, on_delete=models.CASCADE
+        to=Product, on_delete=models.CASCADE, related_name="reviews"
     )
 
     user_name = models.CharField(max_length=100)
     positive = models.CharField(max_length=200)
     negative = models.CharField(max_length=200)
     content = models.TextField()
-    raiting = models.PositiveSmallIntegerField()
+    rating = models.PositiveSmallIntegerField()
 
-class CommentPhoto(models.Model):
+    def __str__(self) -> str:
+        return f"{self.user}:{self.product}"
+
+class ReviewPhoto(models.Model):
     image = models.ImageField(upload_to="comment_image/")
     comment_id = models.UUIDField(primary_key=False)
+
+    def __str__(self) -> str:
+        return f"{self.comment_id}:{self.image}"
+        
+class Comment(models.Model):
+    user = models.ForeignKey(
+        to=User, on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        to=Product, on_delete=models.CASCADE, related_name="comments"
+    )
+    parent = models.ForeignKey(
+        to="self", on_delete=models.CASCADE, related_name="children", null=True, blank=True
+    )
+
+    content = models.TextField()
+
+    def __str__(self) -> str:
+        return f"{self.user}:{self.product}[{self.pk}]"
 
 class ProductPhoto(models.Model):
     image = models.ImageField(upload_to="product_image/")
@@ -128,3 +164,6 @@ class ProductPhoto(models.Model):
     characteristic_value = models.ForeignKey(
         to=СharacteristicValue, on_delete=models.CASCADE, null=True, blank=True,
     )
+
+    def __str__(self) -> str:
+        return f"{self.product}:{self.image}"
