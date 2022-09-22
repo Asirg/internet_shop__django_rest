@@ -1,7 +1,3 @@
-from dataclasses import field
-from itertools import product
-from pyexpat import model
-from select import select
 from rest_framework import serializers
 
 from shop import models
@@ -88,7 +84,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         exclude = ("user", )
 
     def create(self, validated_data):
-        review = models.Review.objects.update_or_create(
+        review, _ = models.Review.objects.update_or_create(
             user=validated_data.get("user", None),
             product=validated_data.get("product", None),
             defaults={
@@ -103,22 +99,16 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 
 class CommentCreateSerializer(serializers.ModelSerializer):
 
-    # Должн быть валидация id и parent
-
     class Meta:
         model = models.Comment
-        fields = ("content", "product",)
+        fields = ("content", "product", "parent")
 
     def create(self, validated_data):
-        comment = models.Comment.objects.filter(pk=validated_data.get("id", None))
-        if comment:
-            comment.update(content=validated_data.get("content"))
-        else:
-            comment = models.Comment.objects.create(
-                user=validated_data.get("user"),
-                product=validated_data.get("product"),
-                parent_id=validated_data.get("parent", None),
-                content=validated_data.get("content")
-            )
+        comment = models.Comment.objects.create(
+            user=validated_data.get("user"),
+            product=validated_data.get("product"),
+            parent=validated_data.get("parent"),
+            content=validated_data.get("content")
+        )
         return comment
 
