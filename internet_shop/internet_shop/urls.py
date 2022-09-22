@@ -18,11 +18,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from internet_shop.yasg import urlpatterns as doc_urlpatterns
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('', include('shop.urls'))
 ]
+
+urlpatterns += doc_urlpatterns
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_ROOT, document_root=settings.MEDIA_ROOT)
