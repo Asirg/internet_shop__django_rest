@@ -44,7 +44,7 @@ class RecursiveSerializer(serializers.Serializer):
         serializer = self.parent.parent.__class__(instance, context=self.context)
         return serializer.data
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentShowSerializer(serializers.ModelSerializer):
 
     children = RecursiveSerializer(many=True)
 
@@ -52,7 +52,7 @@ class CommentSerializer(serializers.ModelSerializer):
         list_serializer_class = FilterCommentListSerializer
         model = models.Comment
         
-        exclude = ("user", "product", )
+        exclude = ("user", "product", "parent")
 
 class ReviewSerializer(serializers.ModelSerializer):
 
@@ -64,15 +64,21 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
 
+    
+
+    review_user = serializers.BooleanField()
+    avg_rating = serializers.IntegerField()
+    quantity_review = serializers.IntegerField()
+
     # categories = serializers.SlugRelatedField(slug_field="name", read_only=True, many=True)
     categories = ProductCategoryDetailSerializer(read_only=True, many=True)
     
-    comments = CommentSerializer(many=True)
+    comments = CommentShowSerializer(many=True)
     reviews = ReviewSerializer(many=True)
 
     class Meta:
         model = models.Product
-        fields = ("name", "description", "cost", "categories", "quantity", "reviews", "comments"
+        fields = ("name", "description", "cost", "categories", "quantity", "reviews", "comments", "review_user", "avg_rating", "quantity_review"
         )
 
 ###################### CREATE
@@ -97,18 +103,14 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         )
         return review
 
-class CommentCreateSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
         fields = ("content", "product", "parent")
 
-    def create(self, validated_data):
-        comment = models.Comment.objects.create(
-            user=validated_data.get("user"),
-            product=validated_data.get("product"),
-            parent=validated_data.get("parent"),
-            content=validated_data.get("content")
-        )
-        return comment
-
+    def update(self, instance, validated_data):
+        print(instance)
+        instance.content = validated_data.get("content")
+        instance.save()
+        return instance
