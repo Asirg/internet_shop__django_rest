@@ -5,12 +5,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from shop.models import Product, Comment, ProductCategory
 from shop.serializers import ProductDetailSerializer, ProductListSerializer, CommentSerializer, ReviewCreateSerializer, ProductCategorySerializer, ProductCategoryDetailSerializer
-from shop.service import ProductFilter
+from shop.service import ProductFilter, PaginationProducts
 
 # Create your views here.
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filterset_class = ProductFilter
+    pagination_class = PaginationProducts
 
     def get_queryset(self):
         products = Product.objects.all().annotate(
