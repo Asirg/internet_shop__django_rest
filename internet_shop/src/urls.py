@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from internet_shop.yasg import urlpatterns as doc_urlpatterns
+from src.yasg import urlpatterns as doc_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),

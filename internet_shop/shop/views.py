@@ -15,7 +15,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         products = Product.objects.all().annotate(
-            review_user = models.Count("reviews", filter=models.Q(reviews__user = self.request.user))
+            review_user = models.Count("reviews", filter=models.Q(reviews__user_id = self.request.user.id))
         ).annotate(
             avg_rating = models.Sum(models.F("reviews__rating")) / models.Count(models.F("reviews"))
         ).annotate(
