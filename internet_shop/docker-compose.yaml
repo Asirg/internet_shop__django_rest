@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:12.12-alpine
+    container_name: shop_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=db
+  server:
+    container_name: shop_web
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: bash -c "python3 /usr/src/django/manage.py migrate --noinput &&
+             python3 /usr/src/django/manage.py runserver 0.0.0.0:8000 "
+     
+    volumes:
+      - .:/usr/src/django
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      
+volumes:
+  postgres_data:
