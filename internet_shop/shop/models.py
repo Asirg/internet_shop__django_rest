@@ -63,6 +63,19 @@ class ProductCategory(models.Model):
         to=GroupCharacteristics, blank=True
     )
 
+    image = models.ImageField(upload_to="product/category/", null=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+class Brand(models.Model):
+    name = models.CharField(max_length=50)
+    url = models.SlugField(unique=True)
+    description = models.TextField()
+
+    image = models.ImageField(upload_to="brand/image/", null=True)
+    icon = models.ImageField(upload_to="brand/icon/", null=True)
+
     def __str__(self) -> str:
         return self.name
 
@@ -71,8 +84,16 @@ class Product(models.Model):
     description = models.TextField()
     cost = models.FloatField()
 
+    main = models.ForeignKey(
+        to='self', on_delete=models.SET_NULL, null=True, blank=True, related_name="product_main"
+    )
+
     categories = models.ManyToManyField(
         to=ProductCategory, related_name="product_categories"
+    )
+
+    brand = models.ForeignKey(
+        to=Brand, on_delete=models.SET_NULL, null=True, blank=True,
     )
 
     @property
@@ -91,9 +112,6 @@ class MaterialProduct(models.Model):
     )
 
     quantity = models.PositiveIntegerField()
-    characteristic_value = models.ForeignKey(
-        to=СharacteristicValue, on_delete=models.CASCADE, null=True, blank=True,
-    )
 
     def __str__(self) -> str:
         return f"{self.product.name} ({self.quantity})"
@@ -131,7 +149,7 @@ class Review(models.Model):
         return f"{self.user}:{self.product}"
 
 class ReviewPhoto(models.Model):
-    image = models.ImageField(upload_to="comment_image/")
+    image = models.ImageField(upload_to="comment/image")
     comment_id = models.UUIDField(primary_key=False)
 
     def __str__(self) -> str:
@@ -154,7 +172,7 @@ class Comment(models.Model):
         return f"{self.user}:{self.product}[{self.pk}]"
 
 class ProductPhoto(models.Model):
-    image = models.ImageField(upload_to="product_image/")
+    image = models.ImageField(upload_to="product/image/")
 
     product = models.ForeignKey(
         to=Product, on_delete=models.CASCADE,
