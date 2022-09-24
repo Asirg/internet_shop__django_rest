@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from shop.models import (TypeComment, Characteristic, СharacteristicValue, Comment, ReviewPhoto,Review, 
-GroupCharacteristics, ProductCategory, Product, MaterialProduct, ProductСharacteristic, ProductPhoto, Brand)
+GroupCharacteristics, ProductCategory, Product, MaterialProduct, ProductСharacteristic, ProductImage, Brand)
 
 admin.site.register(TypeComment)
 admin.site.register(Characteristic)
@@ -14,6 +14,6 @@ admin.site.register(ProductСharacteristic)
 admin.site.register(Review)
 admin.site.register(Comment)
 admin.site.register(ReviewPhoto)
-admin.site.register(ProductPhoto)
+admin.site.register(ProductImage)
 admin.site.register(Brand)
 # Register your models here.

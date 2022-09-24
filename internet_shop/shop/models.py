@@ -25,7 +25,7 @@ class Characteristic(models.Model):
 
 class СharacteristicValue(models.Model):
     characteristic = models.ForeignKey(
-        to=Characteristic, on_delete=models.CASCADE, verbose_name="Характеристика"
+        to=Characteristic, on_delete=models.CASCADE, verbose_name="Характеристика", related_name="values"
     )
 
     value = models.CharField(max_length=100)
@@ -50,14 +50,14 @@ class ProductCategory(models.Model):
     url = models.SlugField(unique=True)
 
     parent = models.ForeignKey(
-        to = "self", on_delete=models.SET_NULL, null=True, blank=True
+        to = "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="childrens"
     )
     type_comment = models.ForeignKey(
-        to=TypeComment, null=True, blank=True, on_delete=models.SET_NULL
+        to=TypeComment, null=True, blank=True, on_delete=models.SET_NULL, related_name="categories"
     )
 
     classification_characteristics = models.ManyToManyField(
-        to=Characteristic, blank=True
+        to=Characteristic, blank=True,
     )
     groups_characteristics = models.ManyToManyField(
         to=GroupCharacteristics, blank=True
@@ -85,7 +85,7 @@ class Product(models.Model):
     cost = models.FloatField()
 
     main = models.ForeignKey(
-        to='self', on_delete=models.SET_NULL, null=True, blank=True, related_name="product_main"
+        to='self', on_delete=models.SET_NULL, null=True, blank=True, related_name="childrens"
     )
 
     categories = models.ManyToManyField(
@@ -93,7 +93,7 @@ class Product(models.Model):
     )
 
     brand = models.ForeignKey(
-        to=Brand, on_delete=models.SET_NULL, null=True, blank=True,
+        to=Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name="products"
     )
 
     @property
@@ -108,7 +108,7 @@ class Product(models.Model):
 
 class MaterialProduct(models.Model):
     product = models.ForeignKey(
-        to=Product, on_delete=models.CASCADE,
+        to=Product, on_delete=models.CASCADE, related_name="material_products"
     )
 
     quantity = models.PositiveIntegerField()
@@ -121,10 +121,10 @@ class MaterialProduct(models.Model):
 
 class ProductСharacteristic(models.Model):
     product = models.ForeignKey(
-        to=Product, on_delete=models.CASCADE, null=True
+        to=Product, on_delete=models.CASCADE, null=True, related_name="characteristics"
     )
     characteristic = models.ForeignKey(
-        to=Characteristic, on_delete=models.CASCADE, null=False
+        to=Characteristic, on_delete=models.CASCADE, null=False, related_name="product_characteristic"
     )
     value = models.CharField(max_length=300)
 
@@ -133,7 +133,7 @@ class ProductСharacteristic(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE
+        to=User, on_delete=models.CASCADE, related_name="reviews"
     )
     product = models.ForeignKey(
         to=Product, on_delete=models.CASCADE, related_name="reviews"
@@ -157,7 +157,7 @@ class ReviewPhoto(models.Model):
         
 class Comment(models.Model):
     user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE
+        to=User, on_delete=models.CASCADE, related_name="comments"
     )
     product = models.ForeignKey(
         to=Product, on_delete=models.CASCADE, related_name="comments"
@@ -171,14 +171,11 @@ class Comment(models.Model):
     def __str__(self) -> str:
         return f"{self.user}:{self.product}[{self.pk}]"
 
-class ProductPhoto(models.Model):
+class ProductImage(models.Model):
     image = models.ImageField(upload_to="product/image/")
 
     product = models.ForeignKey(
-        to=Product, on_delete=models.CASCADE,
-    )
-    characteristic_value = models.ForeignKey(
-        to=СharacteristicValue, on_delete=models.CASCADE, null=True, blank=True,
+        to=Product, on_delete=models.CASCADE, related_name="images"
     )
 
     def __str__(self) -> str:

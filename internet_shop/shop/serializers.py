@@ -1,3 +1,4 @@
+from dataclasses import field
 from rest_framework import serializers
 
 from shop import models
@@ -17,7 +18,13 @@ class ProductCategoryDetailSerializer(serializers.ModelSerializer):
         model = models.ProductCategory
 
         fields="__all__"
-        
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField()
+    
+    class Meta:
+        model = models.ProductImage
+        fields = ("image", )
 
 class ProductListSerializer(serializers.ModelSerializer):
     """Вывод списка товаров"""
@@ -25,13 +32,14 @@ class ProductListSerializer(serializers.ModelSerializer):
     review_user = serializers.BooleanField()
     avg_rating = serializers.IntegerField()
     quantity_review = serializers.IntegerField()
+    images = ProductImageSerializer(many=True)
 
     categories = serializers.SlugRelatedField(slug_field="name", read_only=True, many=True)
     # categories = CategorySerializer(many=True)
 
     class Meta:
         model = models.Product
-        fields = ("name", "description", "cost", "categories", "review_user", "avg_rating", "quantity_review")
+        fields = ("name", "description", "cost", "categories", "review_user", "avg_rating", "quantity_review", "id", "images")
 
 class FilterCommentListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
@@ -63,8 +71,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-
-    
 
     review_user = serializers.BooleanField()
     avg_rating = serializers.IntegerField()
