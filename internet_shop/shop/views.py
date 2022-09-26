@@ -1,10 +1,14 @@
 from django.db import models
+from rest_framework.response import Response
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
 from shop.models import Product, Comment, ProductCategory
-from shop.serializers import ProductDetailSerializer, ProductListSerializer, CommentSerializer, ReviewCreateSerializer, ProductCategorySerializer, ProductCategoryDetailSerializer
+from shop.serializers import (
+    ProductCategorySerializer, ProductCategoryDetailSerializer,
+    ProductDetailSerializer, ProductListSerializer, CommentSerializer, ReviewCreateSerializer, )
+
 from shop.service import ProductFilter, PaginationProducts
 
 # Create your views here.

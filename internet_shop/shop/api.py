@@ -14,9 +14,9 @@ class ProductCategoryViewSet(viewsets.ViewSet):
         serializer = ProductCategorySerializer(queryset, many=True)
         return Response(serializer.data)
     
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, url=None):
         queryset = ProductCategory.objects.all()
-        category = get_object_or_404(queryset, pk=pk)
+        category = get_object_or_404(queryset, url=url)
         serializer = ProductCategoryDetailSerializer(category)
-        return Response(serializer)
+        return Response(serializer.data)
 

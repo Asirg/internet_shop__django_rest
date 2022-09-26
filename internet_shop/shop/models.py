@@ -50,7 +50,7 @@ class ProductCategory(models.Model):
     url = models.SlugField(unique=True)
 
     parent = models.ForeignKey(
-        to = "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="childrens"
+        to = "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="children"
     )
     type_comment = models.ForeignKey(
         to=TypeComment, null=True, blank=True, on_delete=models.SET_NULL, related_name="categories"
