@@ -8,7 +8,6 @@ from shop import models
 #########
 
 class ForeignKeyImageSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField()
     
     class Meta:
         model = models.ProductImage
