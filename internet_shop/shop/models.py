@@ -99,6 +99,7 @@ class Product(models.Model):
     @property
     def quantity(self):
         return 1
+    
     # seller = models.ForeignKey(
     #     to=Seller, on_delete=models.CASCADE, related_name="product_seller"
     # )
