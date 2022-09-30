@@ -1,6 +1,7 @@
 from django.db import models
 from rest_framework.response import Response
 
+import rest_framework
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -12,6 +13,27 @@ from shop.serializers import (
 from shop.service import ProductFilter, PaginationProducts
 
 # Create your views here.
+
+class ProductSearch(generics.ListAPIView):
+    filter_backends = (DjangoFilterBackend, )
+    serializer_class = ProductListSerializer
+    pagination_class = PaginationProducts
+
+    def get_queryset(self):
+        products = Product.objects.filter(
+            name__icontains=self.request.GET.get("q")
+        ).annotate(
+            review_user = models.Count("reviews", filter=models.Q(reviews__user_id = self.request.user.id))
+        ).annotate(
+            avg_rating = models.Sum(models.F("reviews__rating")) / models.Count(models.F("reviews"))
+        ).annotate(
+            quantity_review = models.Count(models.F("reviews"))
+        )
+        return products
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filterset_class = ProductFilter

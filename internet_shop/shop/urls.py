@@ -17,7 +17,8 @@ urlpatterns += format_suffix_patterns([
     path("comment/", views.CommentViewSet.as_view({"post": "create"})),
     path("comment/<int:pk>/", views.CommentViewSet.as_view({"put": "update"})),
     path("category/", api.ProductCategoryViewSet.as_view({"get": 'list'})),
-    path("category/<slug:url>/", api.ProductCategoryViewSet.as_view({"get": 'retrieve'}))
+    path("category/<slug:url>/", api.ProductCategoryViewSet.as_view({"get": 'retrieve'})),
+    path("search/", views.ProductSearch.as_view())
     ]
 )
 
